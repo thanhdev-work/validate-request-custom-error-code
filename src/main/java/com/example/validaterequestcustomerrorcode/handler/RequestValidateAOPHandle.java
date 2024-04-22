@@ -34,20 +34,28 @@ public class RequestValidateAOPHandle {
     @Autowired
     private Environment env;
 
-    @Around("execution(* *(..)) && @annotation(hrmsValidateAnnotation)")
+    @Around("execution(* *(..)) && @annotation(validateAnnotation)")
     public Object validateAnnotation(
-            ProceedingJoinPoint point, ServiceValidate hrmsValidateAnnotation)
+            ProceedingJoinPoint point, ServiceValidate validateAnnotation)
             throws Throwable {
         // Get dataRequest
-        BindingResult bindingResult = (BindingResult) point.getArgs()[1];
-        AbstractEnvironment ae = (AbstractEnvironment) env;
+        BindingResult bindingResult = null;
+
+        //Get BindingResult parameter
+        for (Object arg : point.getArgs()) {
+            if (arg instanceof BindingResult) {
+                bindingResult = (BindingResult) arg;
+            }
+        }
+        if (bindingResult == null) {
+            point.proceed();
+        }
         org.springframework.core.env.PropertySource dfsErrorSource =
-                ae.getPropertySources().get("messageCode");
+                ((AbstractEnvironment) env).getPropertySources().get("messageCode");
         Properties props = new Properties();
         if (dfsErrorSource != null) {
             props = (Properties) dfsErrorSource.getSource();
         }
-        // Validate data
         if (bindingResult.hasErrors()) {
             List<InvalidProperties> invalidProperties = new ArrayList<>();
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
