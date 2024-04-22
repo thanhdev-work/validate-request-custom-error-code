@@ -1,6 +1,6 @@
 package com.example.validaterequestcustomerrorcode.handler;
 
-import com.example.validaterequestcustomerrorcode.annotation.ServiceValidate;
+import com.example.validaterequestcustomerrorcode.handler.annotation.ServiceValidate;
 import com.example.validaterequestcustomerrorcode.common.BaseResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,20 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * The Class PaymentValidateAOPHandle.
- */
 @Aspect
 @Component
-@Order(value = 3)
-@PropertySource(value = "classpath:messages/message.properties", encoding = "UTF-8",
-        name = "messageCode")
-public class ServiceProcessingValidateAOPHandle {
+@PropertySource(
+        value = "classpath:messages/message.properties",
+        encoding = "UTF-8",
+        name = "messageCode"
+)
+public class RequestValidateAOPHandle {
     @Autowired
     private Environment env;
 
     @Around("execution(* *(..)) && @annotation(hrmsValidateAnnotation)")
-    public Object hrmsValidateAnnotation(
+    public Object validateAnnotation(
             ProceedingJoinPoint point, ServiceValidate hrmsValidateAnnotation)
             throws Throwable {
         // Get dataRequest
